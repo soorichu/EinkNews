@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">EinkNews</string>
+    <string name="news_viewer">뉴스 보기</string>
+    <string name="home">홈</string>
+    <string name="text_resize">글자 크기: </string>
+    <string name="smaller">-</string>
+    <string name="larger">+</string>
+    <string name="article_back">&lt; 이전</string>
+    <string name="tv_page_indicator">INDEX</string>
+    <string name="scroll_up">△</string>
+    <string name="scroll_down">▽</string>
+    <string name="article_forward">다음 &gt;</string>
+    <string name="article_next">다음 &gt;</string>
+    <string name="select_section">뉴스 섹션 선택</string>
+    <string name="briefing">브리핑</string>
+    <string name="policy">정치</string>
+    <string name="economy">경제</string>
+    <string name="society">사회</string>
+    <string name="world">세계</string>
+    <string name="climate">환경</string>
+    <string name="culture">문화</string>
+    <string name="tech">기술</string>
+    <string name="people">인물</string>
+    <string name="understanding">칼럼</string>
+    <string name="sync">동기화하기</string>
+    <string name="sync_text"> PC에서 zrr.kr/wNxTE8 주소로 들어간 후 구글 시트를 복제한 주소값을 id.txt에 담아 [저장소]/Android/data/cloud.einknote.newspaper/files 폴더에 넣어주세요.</string>
+    <string name="footer">* 각 컨텐츠에 대한 저작권은 신문사에 있습니다.</string>
+    <string name="setting_server">개인 서버 주소 세팅</string>
+    <string name="get_serverid">id.txt</string>
+    <string name="set_serverid">수정하기</string>
+    <string name="serverid"></string>
+</resources>
