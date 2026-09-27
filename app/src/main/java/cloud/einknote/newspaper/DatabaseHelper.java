@@ -23,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_UPDATE_DATE = "update_date";
 
     public static final String TABLE_SERVER_ID = "serverid";
-    public static final String COL_SERVER_ID = "id";
+    public static final String COL_SERVER_CODE = "server";
 
     // 기본으로 세팅할 ID 값 지정
     public static final String DEFAULT_SERVER_ID = "12hnjugee_A0YLXN48Hn6PF4F_n3RuaZOf7f1C6V_vHQ";
@@ -44,28 +44,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createQuery);
 
         // 1. 서버 ID 테이블 생성 (id 자동 증가 추가)
-        String serveridQuery = "CREATE TABLE " + TABLE_SERVER_ID + " (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "server TEXT);";
+        String serveridQuery = "CREATE TABLE " + TABLE_SERVER_ID + " (" + COL_ID +
+                " INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_SERVER_CODE +
+                " TEXT);";
         db.execSQL(serveridQuery);
 
         // 2. 초기 데이터 삽입
         ContentValues initialValues = new ContentValues();
         // id는 AUTOINCREMENT이므로 값을 넣지 않으면 알아서 1부터 들어갑니다.
-        initialValues.put("server", DEFAULT_SERVER_ID);
+        initialValues.put(COL_SERVER_CODE, DEFAULT_SERVER_ID);
         db.insert(TABLE_SERVER_ID, null, initialValues);
     }
 
-    // 서버 ID 가져오기 (비어있으면 기본값 반환)
+    // 서버 ID 가져오기
     public String getServerID() {
         SQLiteDatabase db = this.getReadableDatabase();
         String serverId = null;
 
         // ⭐️ id를 기준으로 내림차순(DESC) 정렬한 뒤 맨 위 1개(LIMIT 1)만 가져옵니다.
-        String query = "SELECT server FROM " + TABLE_SERVER_ID + " ORDER BY id DESC LIMIT 1";
+        String query = "SELECT "+ COL_SERVER_CODE +" FROM " + TABLE_SERVER_ID + " ORDER BY id DESC LIMIT 1";
         Cursor cursor = db.rawQuery(query, null);
 
-        if (cursor != null && cursor.moveToFirst()) { // 1개만 가져왔으니 First로 읽습니다.
+        if (cursor != null && cursor.moveToFirst()) {
             int columnIndex = cursor.getColumnIndex("server");
             if (columnIndex != -1) {
                 serverId = cursor.getString(columnIndex);
@@ -80,10 +80,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // 서버 ID 추가
-    public void updateServerID(String id) {
+    public void updateServerID(String newServerIDCode) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_SERVER_ID, id);
+        values.put(COL_SERVER_CODE, newServerIDCode);
         db.insert(TABLE_SERVER_ID, null, values);
     }
 
@@ -101,7 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ARTICLES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SERVER_ID);
+    //    db.execSQL("DROP TABLE IF EXISTS " + TABLE_SERVER_ID);
         onCreate(db);
     }
 

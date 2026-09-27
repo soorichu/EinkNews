@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         btnGetServerID = findViewById(R.id.btnGetServerID);
 
 
-        tvStatus.setText(" PC에서 zrr.kr/wNxTE8 주소로 들어간 후 구글 시트를 복제한 주소값을 id.txt에 담아 " + fileUtil.getStorageDirPath(this) + " 폴더에 넣어주세요.");
+        tvStatus.setText(" PC에서 zrr.kr/wNxTE8 주소로 들어간 후 구글 시트를 복제한 주소값을 id.txt에 담아 " + fileUtil.getStorageDirPath(this) + "에 넣어주세요.");
 
         // 1. 평소(실행 시): DB에 저장된 serverid 값을 읽어와서 EditText에 표시
         loadServerIdToEditText();
@@ -218,10 +218,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        if (serverID != null) {
-//            String currentSetting = serverID.getText().toString().trim();
-// //           prefManager.saveServerSetting(currentSetting);
-//        }
+  //      loadServerIdToEditText();
     }
 
 
