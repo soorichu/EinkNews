@@ -100,11 +100,38 @@
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp">
 
-                <!-- [2] 줄간격 조절 (새로 추가) -->
+                <!-- 스크롤 퍼센트 조절 (새로 추가) -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="줄간격"
+                    android:text="@string/scroll_percent"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    android:layout_marginEnd="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvScrollPercent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_scroll"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    android:layout_margin="4dp"/>
+
+
+                <!-- 구분선 -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="16dp"
+                    android:background="#CCCCCC"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"/>
+
+                <!-- 줄간격 조절 (새로 추가) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/line_indent"
                     android:textColor="@color/black"
                     android:textSize="13sp"
                     android:layout_marginEnd="4dp"/>
@@ -113,7 +140,7 @@
                     android:id="@+id/btnLineSpacingMinus"
                     android:layout_width="38dp"
                     android:layout_height="32dp"
-                    android:text="-"
+                    android:text="@string/smaller"
                     android:textColor="@color/black"
                     android:background="@drawable/border_button"
                     app:backgroundTint="@null"
@@ -125,7 +152,7 @@
                     android:id="@+id/btnLineSpacingPlus"
                     android:layout_width="38dp"
                     android:layout_height="32dp"
-                    android:text="+"
+                    android:text="@string/larger"
                     android:textColor="@color/black"
                     android:background="@drawable/border_button"
                     app:backgroundTint="@null"
@@ -155,7 +182,7 @@
                     android:id="@+id/btnFontMinus"
                     android:layout_width="38dp"
                     android:layout_height="32dp"
-                    android:text="-"
+                    android:text="@string/smaller"
                     android:textColor="@color/black"
                     android:background="@drawable/border_button"
                     app:backgroundTint="@null"
@@ -167,7 +194,7 @@
                     android:id="@+id/btnFontPlus"
                     android:layout_width="38dp"
                     android:layout_height="32dp"
-                    android:text="+"
+                    android:text="@string/larger"
                     android:textColor="@color/black"
                     android:background="@drawable/border_button"
                     app:backgroundTint="@null"
@@ -175,6 +202,27 @@
                     android:textStyle="bold"
                     android:padding="0dp"
                     android:layout_marginStart="4dp"/>
+                <!-- 구분선 -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="16dp"
+                    android:background="#CCCCCC"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"/>
+
+<!--                <Button-->
+<!--                    android:id="@+id/btnScrap"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="32dp"-->
+<!--                    android:text="@string/scrap"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:background="@drawable/border_button"-->
+<!--                    app:backgroundTint="@null"-->
+<!--                    android:textSize="14sp"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:padding="0dp"-->
+<!--                    android:padding="0dp"-->
+<!--                    android:layout_marginStart="4dp"/>-->
 
             </LinearLayout>
 
@@ -189,6 +237,9 @@
                 android:id="@+id/articleScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:overScrollMode="never"
+                android:requiresFadingEdge="none"
+                android:scrollbars="none"
                 android:layout_weight="1">
 
                 <TextView
@@ -247,9 +298,6 @@
             android:textSize="12sp"
             android:layout_marginStart="10dp"
             android:padding="0dp"/>
-
-
-
 
         <TextView
             android:id="@+id/tvPageIndicator"

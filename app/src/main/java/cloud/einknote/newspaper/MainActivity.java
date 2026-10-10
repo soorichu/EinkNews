@@ -130,8 +130,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "id.txt 파일이 없거나 내용이 비어 있습니다.", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     private List<String> getSelectedSections() {

@@ -23,7 +23,7 @@
             android:id="@+id/tvCardIndex"
             android:layout_width="28dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/gray"
+            android:textColor="@color/grey"
             android:textSize="14sp"
             android:textStyle="bold" />
 

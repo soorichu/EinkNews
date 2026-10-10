@@ -1,16 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EinkNews</string>
     <string name="news_viewer">뉴스 보기</string>
     <string name="home">홈</string>
-    <string name="text_resize">글자 크기: </string>
+    <string name="scroll_percent">스크롤 </string>
+    <string name="line_indent">줄간격</string>
+    <string name="default_scroll">50%</string>
+    <string name="text_resize">글자 크기 </string>
     <string name="smaller">-</string>
     <string name="larger">+</string>
+    <string name="scrap">스크랩</string>
     <string name="article_back">&lt; 이전</string>
     <string name="tv_page_indicator">INDEX</string>
     <string name="scroll_up">△</string>
     <string name="scroll_down">▽</string>
-    <string name="article_forward">다음 &gt;</string>
-    <string name="article_next">다음 &gt;</string>
+    <string name="article_next">다음&gt;</string>
     <string name="select_section">뉴스 섹션 선택</string>
     <string name="briefing">브리핑</string>
     <string name="policy">정치</string>

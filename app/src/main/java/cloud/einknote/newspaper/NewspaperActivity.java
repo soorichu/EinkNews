@@ -2,15 +2,18 @@ package cloud.einknote.newspaper;
 
 import android.content.res.ColorStateList;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +27,7 @@ public class NewspaperActivity extends AppCompatActivity {
     private Button btnScrollUp, btnScrollDown;
     private Button btnFontPlus, btnFontMinus;
     private LinearLayout tabLayoutContainer, layoutIndex, layoutArticle;
-    private TextView tvArticleTitle, tvArticleBody, tvPageIndicator;
+    private TextView tvArticleTitle, tvArticleBody, tvPageIndicator, tvScrollPercent;
     private ScrollView articleScrollView;
 
     private DatabaseHelper dbHelper;
@@ -32,10 +35,16 @@ public class NewspaperActivity extends AppCompatActivity {
     private List<Article> currentArticles = new ArrayList<>();
     private int currentPage = 0; // 0 = INDEX, 1..N = 각 기사 페이지
 
+
     // 기본 본문 폰트 크기 (sp)
     private float currentBodyFontSize = 17.0f;
     private static final float MIN_FONT_SIZE = 10.0f;
     private static final float MAX_FONT_SIZE = 30.0f;
+
+    // 스크롤 퍼센트
+    private int currentScrollPercent = 50;
+    private static final int MIN_SCROLL_PERCENT = 10;
+    private static final int MAX_SCROLL_PERCENT = 100;
 
     // 기사 본문 줄 간격
     private Button btnLineSpacingMinus;
@@ -71,6 +80,9 @@ public class NewspaperActivity extends AppCompatActivity {
         btnFontMinus = findViewById(R.id.btnFontMinus);
         btnLineSpacingMinus = findViewById(R.id.btnLineSpacingMinus);
         btnLineSpacingPlus = findViewById(R.id.btnLineSpacingPlus);
+        tvScrollPercent = findViewById(R.id.tvScrollPercent);
+        currentScrollPercent = prefManager.getScrollPercent();
+        tvScrollPercent.setText(currentScrollPercent + "%");
 
         tabLayoutContainer = findViewById(R.id.tabLayoutContainer);
         layoutIndex = findViewById(R.id.layoutIndex);
@@ -86,11 +98,15 @@ public class NewspaperActivity extends AppCompatActivity {
         rvIndex = findViewById(R.id.rvIndex);
         setupIndexRecyclerView();
 
+        tvScrollPercent.setOnClickListener(v -> setScrollPercent());
+
         // 이전 페이지
         btnPrev.setOnClickListener(v -> {
             if (currentPage > 0) {
                 currentPage--;
                 renderPage();
+            }else{
+                Toast.makeText(this, "첫번째 기사입니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -99,18 +115,20 @@ public class NewspaperActivity extends AppCompatActivity {
             if (currentPage < currentArticles.size()) {
                 currentPage++;
                 renderPage();
+            }else{
+                Toast.makeText(this, "마지막 기사입니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
         // 반 페이지 위로 스크롤 (△)
         btnScrollUp.setOnClickListener(v -> {
-            int halfHeight = articleScrollView.getHeight() / 2;
+            int halfHeight = articleScrollView.getHeight() * currentScrollPercent / 100;
             articleScrollView.smoothScrollBy(0, -halfHeight);
         });
 
         // 반 페이지 아래로 스크롤 (▽)
         btnScrollDown.setOnClickListener(v -> {
-            int halfHeight = articleScrollView.getHeight() / 2;
+            int halfHeight = articleScrollView.getHeight()  * currentScrollPercent / 100;
             articleScrollView.smoothScrollBy(0, halfHeight);
         });
 
@@ -149,8 +167,35 @@ public class NewspaperActivity extends AppCompatActivity {
                 prefManager.saveLineSpacing(currentLineSpacing); // 영구 저장
             }
         });
+
         // 1. 섹션 보기
         loadSavedSections();
+    }
+
+    private void setScrollPercent(){
+        // 1. 숫자 조절기(NumberPicker) 생성
+        NumberPicker numberPicker = new NumberPicker(this);
+        numberPicker.setMinValue(MIN_SCROLL_PERCENT);
+        numberPicker.setMaxValue(MAX_SCROLL_PERCENT);
+
+        // 현재 텍스트뷰에 있는 값을 파싱해서 NumberPicker의 초기값으로 세팅
+        // (만약 현재 값을 저장해둔 int 변수가 있다면 그걸 넣으시면 됩니다)
+        int currentValue = prefManager.getScrollPercent();
+        numberPicker.setValue(currentValue);
+
+        // 2. 팝업창(AlertDialog)에 NumberPicker를 넣어서 띄우기
+        new AlertDialog.Builder(this)
+                .setTitle("비율 조절")
+                .setView(numberPicker)
+                .setPositiveButton("확인", (dialog, which) -> {
+                    // 3. '확인'을 누르면 조정한 int 값을 가져와서 적용
+                    int selectedValue = numberPicker.getValue();
+                    // 텍스트뷰 업데이트
+                    tvScrollPercent.setText(selectedValue + "%");
+                    prefManager.saveScrollPercent(selectedValue);
+                })
+                .setNegativeButton("취소", null)
+                .show();
     }
 
     private void loadSavedSections() {
@@ -180,12 +225,21 @@ public class NewspaperActivity extends AppCompatActivity {
             Button tabBtn = new Button(this);
             tabBtn.setText(getSectionDisplayName(sec));
             tabBtn.setTextColor(blackColor);
+            tabBtn.setElevation(0f);
+            tabBtn.setStateListAnimator(null);
             tabBtn.setBackgroundResource(R.drawable.border_button);
             tabBtn.setBackgroundTintList(ColorStateList.valueOf(whiteColor));
             tabBtn.setTextSize(13);
             tabBtn.setPadding(24, 0, 24, 0);
 
-            tabBtn.setOnClickListener(v -> selectSection(sec));
+            // 1. 나중에 찾기 쉽게 버튼에 섹션 이름을 꼬리표(Tag)로
+            tabBtn.setTag(sec);
+
+            tabBtn.setOnClickListener(v -> {
+                selectSection(sec);
+                // 2. 탭 클릭 시 볼드체 업데이트 로직 실행
+                updateTabStyles(sec);
+            });
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -193,6 +247,36 @@ public class NewspaperActivity extends AppCompatActivity {
             );
             params.setMargins(0, 0, (int) (8 * density), 0);
             tabLayoutContainer.addView(tabBtn, params);
+        }
+        // 3. 뷰가 처음 그려질 때 첫 번째 섹션을 볼드로 표시 (선택 사항)
+        if (!sections.isEmpty()) {
+            updateTabStyles(sections.get(0));
+        }
+    }
+    // 4. 굵기 변경을 담당할 메서드 추가
+    private void updateTabStyles(String selectedSec) {
+        int childCount = tabLayoutContainer.getChildCount();
+        int whiteColor = getResources().getColor(R.color.white);
+        int blackColor = getResources().getColor(R.color.black);
+        int greyColor = getResources().getColor(R.color.grey);
+
+        for (int i = 0; i < childCount; i++) {
+            View child = tabLayoutContainer.getChildAt(i);
+
+            if (child instanceof Button) {
+                Button tabBtn = (Button) child;
+                String secTag = (String) tabBtn.getTag();
+
+                if (secTag != null && secTag.equals(selectedSec)) {
+                    // 선택된 탭: 볼드체
+                    tabBtn.setTypeface(null, Typeface.BOLD);
+                    tabBtn.setBackgroundTintList(ColorStateList.valueOf(greyColor));
+                } else {
+                    // 나머지 탭: 일반(Normal) 폰트
+                    tabBtn.setTypeface(null, Typeface.NORMAL);
+                    tabBtn.setBackgroundTintList(ColorStateList.valueOf(whiteColor));
+                }
+            }
         }
     }
 
@@ -227,9 +311,26 @@ public class NewspaperActivity extends AppCompatActivity {
 
             // 기사 제목 10자 이내 적용
             String shortTitle = getTenCharTitle(item.getTitle());
-            tvArticleTitle.setText("["+ getSectionDisplayName(currentSection) +"] "+shortTitle);
+            tvArticleTitle.setText(shortTitle);
+            String rawContent = item.getContent();
 
-            tvArticleBody.setText(item.getContent().isEmpty() ? "본문 내용이 없습니다." : item.getContent());
+            // 정규식 설명:
+            // \{?\"?\s* -> 앞에 {, ", 공백이 있을 수도 있고 없을 수도 있음
+            // class=\"[^\"]*\" -> class="어쩌구" 패턴
+            // [^>]*> -> 그 뒤로 > 가 나올 때까지의 모든 문자 포함하여 > 로 끝남
+            // \}? -> 맨 뒤에 } 가 있을 경우까지 포함
+            String cleanContent = rawContent.replaceAll("\\{?\"?\\s*class=\"[^\"]*\"[^>]*>\\}?", "");
+
+            tvArticleBody.setText(cleanContent.isEmpty() ? "본문 내용이 없습니다." : cleanContent);
+            int pageHeight = articleScrollView.getHeight();
+
+            // 텍스트뷰의 하단에 정확히 한 페이지(pageHeight)만큼의 여백을 추가
+            tvArticleBody.setPadding(
+                    tvArticleBody.getPaddingLeft(),
+                    tvArticleBody.getPaddingTop(),
+                    tvArticleBody.getPaddingRight(),
+                    pageHeight
+            );
 
             // 폰트 크기 설정 (기사제목 = 본문 + 2sp)
             updateFontSizes();
@@ -303,6 +404,7 @@ public class NewspaperActivity extends AppCompatActivity {
     private void loadSavedSettings() {
         currentBodyFontSize = prefManager.getFontSize();
         currentLineSpacing = prefManager.getLineSpacing();
+        currentScrollPercent = prefManager.getScrollPercent();
 
         applySettingsToView();
     }
